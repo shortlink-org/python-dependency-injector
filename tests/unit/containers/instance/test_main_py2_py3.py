@@ -229,7 +229,7 @@ def test_init_and_shutdown_resources_ordering():
 
     container.init_resources()
     assert initialized_resources == ["r1", "r2", "r3"]
-    assert shutdown_resources == []
+    assert not shutdown_resources
 
     container.shutdown_resources()
     assert initialized_resources == ["r1", "r2", "r3"]

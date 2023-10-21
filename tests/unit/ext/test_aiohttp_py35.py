@@ -22,7 +22,7 @@ class OtherClassBasedView(web.View):
 @web.middleware
 async def middleware(request, handler):
     resp = await handler(request)
-    resp.text = resp.text + " wink1"
+    resp.text = f"{resp.text} wink1"
     return resp
 
 

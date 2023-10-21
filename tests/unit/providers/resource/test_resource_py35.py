@@ -157,6 +157,7 @@ def test_init_class():
 
 def test_init_class_generic_typing():
     # See issue: https://github.com/ets-labs/python-dependency-injector/issues/488
+
     class TestDependency:
         ...
 
@@ -166,7 +167,7 @@ def test_init_class_generic_typing():
 
         def shutdown(self, resource: TestDependency) -> None: ...
 
-    assert issubclass(TestResource, resources.Resource) is True
+    assert issubclass(TestResource, resources.Resource)
 
 
 def test_init_class_abc_init_definition_is_required():

@@ -53,7 +53,7 @@ class Tester(object):
             def __init__(self, a, b, c):
                 pass
 
-        for x in range(int(5000000 * self.duration_factor)):
+        for _ in range(int(5000000 * self.duration_factor)):
             Test(a=A(), b=B(), c=C())
 
     def test_factory_3_factory_kw_injections(self, providers):
@@ -78,7 +78,7 @@ class Tester(object):
                                          a=a_factory,
                                          b=b_factory,
                                          c=c_factory)
-        for x in range(int(5000000 * self.duration_factor)):
+        for _ in range(int(5000000 * self.duration_factor)):
             test_factory()
 
     def test_abstract_factory_3_factory_kw_injections(self, providers):
@@ -104,7 +104,7 @@ class Tester(object):
                                                 a=a_factory,
                                                 b=b_factory,
                                                 c=c_factory))
-        for x in range(int(5000000 * self.duration_factor)):
+        for _ in range(int(5000000 * self.duration_factor)):
             test_factory()
 
     def test_factory_6_factory_kw_injections_0_context(self, providers):
@@ -114,7 +114,7 @@ class Tester(object):
                 pass
 
         test_factory = providers.Factory(Test, a=1, b=2, c=3, d=4, e=5, f=6)
-        for x in range(int(5000000 * self.duration_factor)):
+        for _ in range(int(5000000 * self.duration_factor)):
             test_factory()
 
     def test_factory_6_factory_kw_injections_1_context(self, providers):
@@ -124,7 +124,7 @@ class Tester(object):
                 pass
 
         test_factory = providers.Factory(Test, f=6)
-        for x in range(int(5000000 * self.duration_factor)):
+        for _ in range(int(5000000 * self.duration_factor)):
             test_factory(a=1, b=2, c=3, d=4, e=5)
 
     def test_factory_6_factory_kw_injections_3_context(self, providers):
@@ -134,7 +134,7 @@ class Tester(object):
                 pass
 
         test_factory = providers.Factory(Test, a=1, b=2, c=3)
-        for x in range(int(5000000 * self.duration_factor)):
+        for _ in range(int(5000000 * self.duration_factor)):
             test_factory(d=4, e=5, f=6)
 
 

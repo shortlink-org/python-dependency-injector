@@ -9,7 +9,7 @@ from .containers import Container
 
 @pytest.fixture
 def container():
-    container = Container(
+    return Container(
         config={
             "finder": {
                 "type": "csv",
@@ -23,7 +23,6 @@ def container():
             },
         },
     )
-    return container
 
 
 def test_movies_directed_by(container):

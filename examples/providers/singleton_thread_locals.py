@@ -32,11 +32,10 @@ if __name__ == "__main__":
     container = Container()
 
     n = 10
-    threads = []
-    for thread_number in range(n):
-        threads.append(
-            container.thread_factory(name="Thread{0}".format(thread_number)),
-        )
+    threads = [
+        container.thread_factory(name="Thread{0}".format(thread_number))
+        for thread_number in range(n)
+    ]
     for thread in threads:
         thread.start()
     for thread in threads:

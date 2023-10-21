@@ -51,7 +51,7 @@ async def test_init_and_shutdown_ordering():
 
     await container.init_resources()
     assert initialized_resources == ["r1", "r2", "r3"]
-    assert shutdown_resources == []
+    assert not shutdown_resources
 
     await container.shutdown_resources()
     assert initialized_resources == ["r1", "r2", "r3"]
@@ -132,7 +132,7 @@ async def test_shutdown_sync_and_async_ordering():
 
     await container.init_resources()
     assert initialized_resources == ["r1", "r2", "r3"]
-    assert shutdown_resources == []
+    assert not shutdown_resources
 
     await container.shutdown_resources()
     assert initialized_resources == ["r1", "r2", "r3"]

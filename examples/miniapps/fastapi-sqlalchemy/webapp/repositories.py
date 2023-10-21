@@ -19,10 +19,10 @@ class UserRepository:
 
     def get_by_id(self, user_id: int) -> User:
         with self.session_factory() as session:
-            user = session.query(User).filter(User.id == user_id).first()
-            if not user:
+            if user := session.query(User).filter(User.id == user_id).first():
+                return user
+            else:
                 raise UserNotFoundError(user_id)
-            return user
 
     def add(self, email: str, password: str, is_active: bool = True) -> User:
         with self.session_factory() as session:

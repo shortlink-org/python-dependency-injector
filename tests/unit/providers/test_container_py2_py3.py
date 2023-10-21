@@ -54,12 +54,16 @@ def test_double_override():
 
 def test_override():
     # See: https://github.com/ets-labs/python-dependency-injector/issues/354
+
     class D(containers.DeclarativeContainer):
         foo = providers.Object("foo")
 
+
+
     class A(containers.DeclarativeContainer):
         d = providers.DependenciesContainer()
-        bar = providers.Callable(lambda f: f + "++", d.foo.provided)
+        bar = providers.Callable(lambda f: f"{f}++", d.foo.provided)
+
 
     class B(containers.DeclarativeContainer):
         d = providers.Container(D)
@@ -125,12 +129,16 @@ def test_override_by_not_a_container():
 
 def test_lazy_overriding():
     # See: https://github.com/ets-labs/python-dependency-injector/issues/354
+
     class D(containers.DeclarativeContainer):
         foo = providers.Object("foo")
 
+
+
     class A(containers.DeclarativeContainer):
         d = providers.DependenciesContainer()
-        bar = providers.Callable(lambda f: f + "++", d.foo.provided)
+        bar = providers.Callable(lambda f: f"{f}++", d.foo.provided)
+
 
     class B(containers.DeclarativeContainer):
         d = providers.DependenciesContainer()
@@ -144,12 +152,16 @@ def test_lazy_overriding():
 
 def test_lazy_overriding_deep():
     # Extended version of test_lazy_overriding()
+
     class D(containers.DeclarativeContainer):
         foo = providers.Object("foo")
 
+
+
     class C(containers.DeclarativeContainer):
         d = providers.DependenciesContainer()
-        bar = providers.Callable(lambda f: f + "++", d.foo.provided)
+        bar = providers.Callable(lambda f: f"{f}++", d.foo.provided)
+
 
     class A(containers.DeclarativeContainer):
         d = providers.DependenciesContainer()

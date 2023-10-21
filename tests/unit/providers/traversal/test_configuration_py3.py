@@ -60,4 +60,4 @@ def test_traverse_overridden_option_2():
 
     all_providers = list(config.option1.traverse())
 
-    assert len(all_providers) == 0
+    assert not all_providers

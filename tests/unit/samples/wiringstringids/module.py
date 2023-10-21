@@ -56,8 +56,7 @@ def test_function(service: Service = Provide["service"]):
 
 @inject
 def test_function_provider(service_provider: Callable[..., Service] = Provider["service"]):
-    service = service_provider()
-    return service
+    return service_provider()
 
 
 @inject
@@ -94,14 +93,12 @@ def test_config_value_required_undefined(
 
 @inject
 def test_provide_provider(service_provider: Callable[..., Service] = Provide["service.provider"]):
-    service = service_provider()
-    return service
+    return service_provider()
 
 
 @inject
 def test_provider_provider(service_provider: Callable[..., Service] = Provider["service.provider"]):
-    service = service_provider()
-    return service
+    return service_provider()
 
 
 @inject

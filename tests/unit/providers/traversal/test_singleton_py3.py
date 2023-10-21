@@ -6,7 +6,7 @@ from dependency_injector import providers
 def test_traverse():
     provider = providers.Singleton(dict)
     all_providers = list(provider.traverse())
-    assert len(all_providers) == 0
+    assert not all_providers
 
 
 def test_traverse_args():

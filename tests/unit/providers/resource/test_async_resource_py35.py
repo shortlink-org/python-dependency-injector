@@ -112,6 +112,7 @@ async def test_init_async_class():
 
 def test_init_async_class_generic_typing():
     # See issue: https://github.com/ets-labs/python-dependency-injector/issues/488
+
     class TestDependency:
         ...
 
@@ -121,7 +122,7 @@ def test_init_async_class_generic_typing():
 
         async def shutdown(self, resource: TestDependency) -> None: ...
 
-    assert issubclass(TestAsyncResource, resources.AsyncResource) is True
+    assert issubclass(TestAsyncResource, resources.AsyncResource)
 
 
 def test_init_async_class_abc_init_definition_is_required():
@@ -166,7 +167,6 @@ async def test_init_with_error():
 async def test_init_async_gen_with_error():
     async def _init():
         raise RuntimeError()
-        yield
 
     provider = providers.Resource(_init)
 
