@@ -563,9 +563,9 @@ def _fetch_reference_injections(  # noqa: C901
     try:
         signature = inspect.signature(fn)
     except ValueError as exception:
-        if "no signature found" in str(exception):
-            return {}, {}
-        elif "not supported by signature" in str(exception):
+        if "no signature found" in str(
+            exception
+        ) or "not supported by signature" in str(exception):
             return {}, {}
         else:
             raise exception
@@ -602,7 +602,7 @@ def _locate_dependent_closing_args(provider: providers.Provider) -> Dict[str, pr
         if not isinstance(arg, providers.Provider) or not hasattr(arg, "args"):
             continue
         if isinstance(arg, providers.Resource):
-            return {str(id(arg)): arg}
+            return {id(arg): arg}
         if arg.args or arg.kwargs:
             closing_deps |= _locate_dependent_closing_args(arg)
 
@@ -620,13 +620,15 @@ def _bind_injections(fn: Callable[..., Any], providers_map: ProvidersMap) -> Non
         if provider is None:
             continue
 
-        if isinstance(marker, Provide):
+        if (
+            not isinstance(marker, Provide)
+            and isinstance(marker, Provider)
+            and isinstance(provider, providers.Delegate)
+            or isinstance(marker, Provide)
+        ):
             patched_callable.add_injection(injection, provider)
         elif isinstance(marker, Provider):
-            if isinstance(provider, providers.Delegate):
-                patched_callable.add_injection(injection, provider)
-            else:
-                patched_callable.add_injection(injection, provider.provider)
+            patched_callable.add_injection(injection, provider.provider)
 
         if injection in patched_callable.reference_closing:
             patched_callable.add_closing(injection, provider)
@@ -646,10 +648,7 @@ def _fetch_modules(package):
     modules = [package]
     if not hasattr(package, "__path__") or not hasattr(package, "__name__"):
         return modules
-    for module_info in pkgutil.walk_packages(
-            path=package.__path__,
-            prefix=package.__name__ + ".",
-    ):
+    for module_info in pkgutil.walk_packages(path=package.__path__, prefix=f"{package.__name__}."):
         module = importlib.import_module(module_info.name)
         modules.append(module)
     return modules
@@ -839,11 +838,9 @@ def provided() -> ProvidedInstance:
 
 
 class ClassGetItemMeta(GenericMeta):
-    def __getitem__(cls, item):
+    def __getitem__(self, item):
         # Spike for Python 3.6
-        if isinstance(item, tuple):
-            return cls(*item)
-        return cls(item)
+        return self(*item) if isinstance(item, tuple) else self(item)
 
 
 class _Marker(Generic[T], metaclass=ClassGetItemMeta):
@@ -861,9 +858,7 @@ class _Marker(Generic[T], metaclass=ClassGetItemMeta):
         self.modifier = modifier
 
     def __class_getitem__(cls, item) -> T:
-        if isinstance(item, tuple):
-            return cls(*item)
-        return cls(item)
+        return cls(*item) if isinstance(item, tuple) else cls(item)
 
     def __call__(self) -> T:
         return self
