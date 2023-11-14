@@ -1,0 +1,96 @@
+version: 2
+updates:
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/aiohttp
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/application-multiple-containers
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/application-single-container
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /examples/miniapps/asyncio-daemon
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/asyncio-daemon
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/decoupled-packages
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/django
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /examples/miniapps/fastapi-redis
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/fastapi-redis
+    schedule:
+      interval: daily
+
+  - package-ecosystem: docker
+    directory: /examples/miniapps/fastapi-sqlalchemy
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/fastapi-sqlalchemy
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/fastapi
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/flask-blueprints
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/flask
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/movie-lister
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/sanic
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /examples/miniapps/starlette-lifespan
+    schedule:
+      interval: daily
+
+  - package-ecosystem: pip
+    directory: /
+    schedule:
+      interval: daily
