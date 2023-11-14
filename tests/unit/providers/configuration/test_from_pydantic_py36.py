@@ -1,64 +1,59 @@
 """Configuration.from_pydantic() tests."""
 
 import pydantic
-from dependency_injector import providers, errors
+from dependency_injector import providers
 from pytest import fixture, mark, raises
 
 
 class Section11(pydantic.BaseModel):
-    value1 = 1
+    value1: int = 1
 
 
 class Section12(pydantic.BaseModel):
-    value2 = 2
+    value2: int = 2
 
 
 class Settings1(pydantic.BaseSettings):
-    section1 = Section11()
-    section2 = Section12()
+    section1: Section11 = Section11()
+    section2: Section12 = Section12()
 
 
 class Section21(pydantic.BaseModel):
-    value1 = 11
-    value11 = 11
+    value1: int = 11
+    value11: int = 11
 
 
 class Section3(pydantic.BaseModel):
-    value3 = 3
+    value3: int = 3
 
 
 class Settings2(pydantic.BaseSettings):
-    section1 = Section21()
-    section3 = Section3()
+    section1: Section21 = Section21()
+    section3: Section3= Section3()
+
 
 @fixture
-def no_pydantic_module_installed():
-    providers.pydantic = None
-    yield
-    providers.pydantic = pydantic
+def config(config_type, pydantic_settings_1, pydantic_settings_2):
+    if config_type == "strict":
+        return providers.Configuration(strict=True)
+    elif config_type == "default":
+        return providers.Configuration(pydantic_settings=[pydantic_settings_1, pydantic_settings_2])
+    else:
+        raise ValueError("Undefined config type \"{0}\"".format(config_type))
 
 
-def test(config):
-    config.from_pydantic(Settings1())
-
-    assert config() == {"section1": {"value1": 1}, "section2": {"value2": 2}}
-    assert config.section1() == {"value1": 1}
-    assert config.section1.value1() == 1
-    assert config.section2() == {"value2": 2}
-    assert config.section2.value2() == 2
+@fixture
+def pydantic_settings_1():
+    return Settings1()
 
 
-def test_kwarg(config):
-    config.from_pydantic(Settings1(), exclude={"section2"})
-
-    assert config() == {"section1": {"value1": 1}}
-    assert config.section1() == {"value1": 1}
-    assert config.section1.value1() == 1
+@fixture
+def pydantic_settings_2():
+    return Settings2()
 
 
-def test_merge(config):
-    config.from_pydantic(Settings1())
-    config.from_pydantic(Settings2())
+def test_load(config):
+    config.load()
 
     assert config() == {
         "section1": {
@@ -81,104 +76,51 @@ def test_merge(config):
     assert config.section3.value3() == 3
 
 
-def test_empty_settings(config):
-    config.from_pydantic(pydantic.BaseSettings())
+def test_get_pydantic_settings(config, pydantic_settings_1, pydantic_settings_2):
+    assert config.get_pydantic_settings() == [pydantic_settings_1, pydantic_settings_2]
+
+
+def test_copy(config, pydantic_settings_1, pydantic_settings_2):
+    config_copy = providers.deepcopy(config)
+    assert config_copy.get_pydantic_settings() == [pydantic_settings_1, pydantic_settings_2]
+
+
+def test_set_pydantic_settings(config):
+    class Settings3(pydantic.BaseSettings):
+        ...
+
+    class Settings4(pydantic.BaseSettings):
+        ...
+
+    settings_3 = Settings3()
+    settings_4 = Settings4()
+
+    config.set_pydantic_settings([settings_3, settings_4])
+    assert config.get_pydantic_settings() == [settings_3, settings_4]
+
+
+def test_file_does_not_exist(config):
+    config.set_pydantic_settings([pydantic.BaseSettings()])
+    config.load()
     assert config() == {}
 
 
 @mark.parametrize("config_type", ["strict"])
-def test_empty_settings_strict_mode(config):
+def test_file_does_not_exist_strict_mode(config):
+    config.set_pydantic_settings([pydantic.BaseSettings()])
     with raises(ValueError):
-        config.from_pydantic(pydantic.BaseSettings())
-
-
-def test_option_empty_settings(config):
-    config.option.from_pydantic(pydantic.BaseSettings())
-    assert config.option() == {}
-
-
-@mark.parametrize("config_type", ["strict"])
-def test_option_empty_settings_strict_mode(config):
-    with raises(ValueError):
-        config.option.from_pydantic(pydantic.BaseSettings())
-
-
-def test_required_empty_settings(config):
-    with raises(ValueError):
-        config.from_pydantic(pydantic.BaseSettings(), required=True)
-
-
-def test_required_option_empty_settings(config):
-    with raises(ValueError):
-        config.option.from_pydantic(pydantic.BaseSettings(), required=True)
-
-
-@mark.parametrize("config_type", ["strict"])
-def test_not_required_empty_settings_strict_mode(config):
-    config.from_pydantic(pydantic.BaseSettings(), required=False)
+        config.load()
     assert config() == {}
 
 
+def test_required_file_does_not_exist(config):
+    config.set_pydantic_settings([pydantic.BaseSettings()])
+    with raises(ValueError):
+        config.load(required=True)
+
+
 @mark.parametrize("config_type", ["strict"])
-def test_not_required_option_empty_settings_strict_mode(config):
-    config.option.from_pydantic(pydantic.BaseSettings(), required=False)
-    assert config.option() == {}
-    assert config() == {"option": {}}
-
-
-def test_not_instance_of_settings(config):
-    with raises(errors.Error) as error:
-        config.from_pydantic({})
-    assert error.value.args[0] == (
-        "Unable to recognize settings instance, expect \"pydantic.BaseSettings\", "
-        "got {0} instead".format({})
-    )
-
-
-def test_option_not_instance_of_settings(config):
-    with raises(errors.Error) as error:
-        config.option.from_pydantic({})
-    assert error.value.args[0] == (
-        "Unable to recognize settings instance, expect \"pydantic.BaseSettings\", "
-        "got {0} instead".format({})
-    )
-
-
-def test_subclass_instead_of_instance(config):
-    with raises(errors.Error) as error:
-        config.from_pydantic(Settings1)
-    assert error.value.args[0] == (
-        "Got settings class, but expect instance: "
-        "instead \"Settings1\" use \"Settings1()\""
-    )
-
-
-def test_option_subclass_instead_of_instance(config):
-    with raises(errors.Error) as error:
-        config.option.from_pydantic(Settings1)
-    assert error.value.args[0] == (
-        "Got settings class, but expect instance: "
-        "instead \"Settings1\" use \"Settings1()\""
-    )
-
-
-@mark.usefixtures("no_pydantic_module_installed")
-def test_no_pydantic_installed(config):
-    with raises(errors.Error) as error:
-        config.from_pydantic(Settings1())
-    assert error.value.args[0] == (
-        "Unable to load pydantic configuration - pydantic is not installed. "
-        "Install pydantic or install Dependency Injector with pydantic extras: "
-        "\"pip install dependency-injector[pydantic]\""
-    )
-
-
-@mark.usefixtures("no_pydantic_module_installed")
-def test_option_no_pydantic_installed(config):
-    with raises(errors.Error) as error:
-        config.option.from_pydantic(Settings1())
-    assert error.value.args[0] == (
-        "Unable to load pydantic configuration - pydantic is not installed. "
-        "Install pydantic or install Dependency Injector with pydantic extras: "
-        "\"pip install dependency-injector[pydantic]\""
-    )
+def test_not_required_file_does_not_exist_strict_mode(config):
+    config.set_pydantic_settings([pydantic.BaseSettings()])
+    config.load(required=False)
+    assert config() == {}
