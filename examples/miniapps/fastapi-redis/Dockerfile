@@ -1,4 +1,4 @@
-FROM python:3.10-buster
+FROM python:3.10-buster@sha256:31a8498af27dba1f431f2df60189ca79ff5f440cfa7b6dea2da6ab15c74abcd4
 
 ENV PYTHONUNBUFFERED=1
 
