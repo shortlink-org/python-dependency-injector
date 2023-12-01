@@ -12,7 +12,7 @@ jobs:
     runs-on: ubuntu-20.04
     strategy:
       matrix:
-        python-version: [2.7, 3.5, 3.6, 3.7, pypy2.7, pypy3.9]
+        python-version: [3.7, pypy2.7, pypy3.9]
     steps:
       - name: Harden Runner
         uses: step-security/harden-runner@1b05615854632b887b69ae1be8cbefe72d3ae423 # v2.6.0
